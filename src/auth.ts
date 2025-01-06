@@ -2,6 +2,7 @@ import { CRED_KEY } from "./const";
 import { reg_login } from "./3rd/reg";
 import Storage from "./storage";
 import { CMUCred } from "./types";
+import { mango_verify } from "./3rd/mango";
 
 export interface Auth {
     isLoggedIn(): Boolean;
@@ -26,6 +27,7 @@ export class StorageAuth implements Auth {
 
     public async login(cred: CMUCred): Promise<void> {
         await reg_login(cred);
+        await mango_verify(cred);
         this._storage.set(CRED_KEY, cred);
     }
 

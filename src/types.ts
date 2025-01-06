@@ -49,10 +49,10 @@ export type BaseEvent = {
     groups: UUID[]
 };
 
-export type AlldayEvent = BaseEvent & {
+export type OneTimeEvent = BaseEvent & {
     date: Date;
 }
 
 export type RangedEvent = BaseEvent & Duration
 
-export type CalendarEvent = AlldayEvent | RangedEvent
+export type CalendarEvent = OneTimeEvent | RangedEvent
