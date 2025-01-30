@@ -1,14 +1,11 @@
-import SMCalendar, { AuthorizedSMCalendar, UnauthorizedSMCalendar } from "./calendar";
+import { AuthClient } from "./auth";
+import SMCalendar, { SMCalendarClient } from "./calendar";
 import LocalStorage from "./storage/localStorage";
-import Storage from "./storage";
-import { Auth, StorageAuth } from "./auth";
 
-export function useSMCalendar(storage?: Storage, auth?: Auth): SMCalendar {
-    storage = storage || new LocalStorage;
-    auth = auth || new StorageAuth(storage);
-    if (auth.isLoggedIn())
-        return new AuthorizedSMCalendar(storage, auth)
-    return new UnauthorizedSMCalendar(storage, auth);
+export function useSMCalendar(): SMCalendar {
+    const storage = new LocalStorage();
+    const auth = new AuthClient(storage);
+    return new SMCalendarClient(auth);
 }
 
 export type { SMCalendar };

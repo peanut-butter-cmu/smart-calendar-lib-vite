@@ -1,37 +1,35 @@
-import { CRED_KEY } from "./const";
-import { reg_login } from "./3rd/reg";
+import ky from "ky";
 import Storage from "./storage";
-import { CMUCred } from "./types";
-import { mango_verify } from "./3rd/mango";
+
+const API_URL = "http://localhost:3000";
 
 export interface Auth {
     isLoggedIn(): Boolean;
-    getCred(): CMUCred | null;
-    login(cred: CMUCred): Promise<void>;
+    getCred(): string | null;
+    login(cred: { username: string, password: string }): Promise<void>;
     logout(): Promise<void>;
 }
 
-export class StorageAuth implements Auth {
+export class AuthClient implements Auth {
     private _storage: Storage;
-    public constructor(storage: Storage) {
+    constructor(storage: Storage) {
         this._storage = storage;
     }
 
-    public isLoggedIn(): Boolean {
-        return this._storage.get(CRED_KEY) !== null;
+    isLoggedIn(): Boolean {
+        return this._storage.get("token") !== null;
     }
 
-    public getCred(): CMUCred | null {
-        return this._storage.get(CRED_KEY);
+    getCred(): string | null {
+        return this._storage.get("token");
     }
 
-    public async login(cred: CMUCred): Promise<void> {
-        await reg_login(cred);
-        await mango_verify(cred);
-        this._storage.set(CRED_KEY, cred);
+    async login(cred: { username: string, password: string }): Promise<void> {
+        const resp = await ky.post(`${API_URL}/user/auth`, { json: cred });
+        this._storage.set("token", await resp.text())
     }
 
-    public async logout(): Promise<void> {
-        this._storage.remove(CRED_KEY);
+    async logout(): Promise<void> {
+        this._storage.remove("token");
     }
 }
