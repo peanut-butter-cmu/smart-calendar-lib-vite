@@ -1,7 +1,7 @@
 import ky from "ky";
 import Storage from "./storage";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://smc-api.pmaw.net";
 
 export interface Auth {
     isLoggedIn(): Boolean;

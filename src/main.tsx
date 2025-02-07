@@ -3,8 +3,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 const smCalendar = useSMCalendar();
-smCalendar.getAuth().login({ username: "perapol_p", password: "d:q!_Vej5zS6R3\"" }).then(async () => {
-  console.log(await smCalendar.getEvents())
+smCalendar.getAuth().login({ username: import.meta.env.VITE_CMU_USER, password: import.meta.env.VITE_CMU_PASS }).then(async () => {
+  console.log(await smCalendar.addEvent({
+    title: "x",
+    start: new Date(),
+    end: new Date(),
+  }))
 })
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

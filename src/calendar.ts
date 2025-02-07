@@ -1,16 +1,17 @@
 import ky from "ky";
 import { Auth } from "./auth";
-import { CalendarEvent, CalendarEventResp, EventGroup, EventGroupResp } from "./types";
+import { CalendarEvent, CalendarEventResp, EventGroup, EventGroupResp, EventCreation, EventModification, User } from "./types";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://smc-api.pmaw.net";
 
 export default interface SMCalendar {
     getAuth(): Auth;
-    getGroups(): Promise<EventGroup[]>;
+    getGroups(): Promise<EventGroupResp[]>;
     getEvents(): Promise<CalendarEvent[]>;
-    addEvents(events: CalendarEvent[]): Promise<void>;
-    updateEvents(originalEventID: number, newEvent: Partial<Event>): Promise<void>;
-    deleteEvents(events: number[]): Promise<void>;
+    addEvent(events: EventCreation): Promise<void>;
+    updateEvent(originalEventID: number, newEvent: EventModification): Promise<void>;
+    deleteEvent(events: number): Promise<void>;
+    getUser(): Promise<User>,
 }
 
 export class SMCalendarClient implements SMCalendar {
@@ -23,39 +24,44 @@ export class SMCalendarClient implements SMCalendar {
         return this._auth;
     }
     
-    async getGroups(): Promise<EventGroup[]> {
+    async getGroups(): Promise<EventGroupResp[]> {
         const resp = await ky.get(`${API_URL}/calendar/groups`, {
             headers: { authorization: `Bearer ${this._auth.getCred()}` }
         });
-        const groups = await resp.json<EventGroupResp>();
-        return groups.map(group => ({
-            ...group,
-            default_color: "ffffff"
-        }));
+        return await resp.json();
     }
 
     async getEvents(): Promise<CalendarEvent[]> {
         const resp = await ky.get(`${API_URL}/calendar/events`, {
             headers: { authorization: `Bearer ${this._auth.getCred()}` }
         });
-        const events = await resp.json<CalendarEventResp>();
-        return events.map(({ id, title, start, end, groups }) => {
-            if (start === end) // one time
-                return { id, title, groups, date: start };
-            else
-                return { id, title, start, end, groups }
+        return resp.json<CalendarEventResp>();
+    }
+
+    async addEvent(event: EventCreation): Promise<void> {
+        await ky.post(`${API_URL}/calendar/event`, {
+            headers: { authorization: `Bearer ${this._auth.getCred()}` },
+            json: event
         });
     }
 
-    async addEvents(events: CalendarEvent[]): Promise<void> {
-        throw new Error("Method not implemented.");
+    async updateEvent(originalEventID: number, newEvent: EventModification): Promise<void> {
+        await ky.patch(`${API_URL}/calendar/event/${originalEventID}`, {
+            headers: { authorization: `Bearer ${this._auth.getCred()}` },
+            json: newEvent
+        });
     }
 
-    async updateEvents(originalEventID: number, newEvent: Partial<Event>): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteEvent(event: number): Promise<void> {
+        await ky.delete(`${API_URL}/calendar/event/${event}`, {
+            headers: { authorization: `Bearer ${this._auth.getCred()}` }
+        });
     }
 
-    async deleteEvents(events: number[]): Promise<void> {
-        throw new Error("Method not implemented.");
+    async getUser(): Promise<User> {
+        const resp = await ky.get(`${API_URL}/user/me`, {
+            headers: { authorization: `Bearer ${this._auth.getCred()}` }
+        });
+        return await resp.json();
     }
 }

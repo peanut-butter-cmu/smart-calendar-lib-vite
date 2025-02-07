@@ -21,11 +21,15 @@ export type OneTimeEvent = BaseEvent & {
 
 export type RangedEvent = BaseEvent & Duration;
 
-export type CalendarEvent = OneTimeEvent | RangedEvent;
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+export type CalendarEvent = RangedEvent;
+export type EventCreation = Omit<CalendarEvent, "id" | "groups">;
+export type EventModification = Partial<Optional<Omit<CalendarEvent, "id">, "groups">>;
 
 export type EventGroupResp = {
     id: number;
     title: string;
+    color: string;
 }[];
 
 export type CalendarEventResp = {
@@ -35,3 +39,10 @@ export type CalendarEventResp = {
     end: Date;
     groups: number[];
 }[];
+
+export type User = {
+    studentNo: number;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+};
