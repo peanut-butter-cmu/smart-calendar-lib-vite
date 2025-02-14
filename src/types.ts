@@ -3,10 +3,32 @@ export type Duration = {
     end: Date;
 };
 
+export enum Priority {
+    LOW = 1,
+    MEDIUM = 2,
+    HIGH = 3
+};
+
+export enum ReminderOptions {
+    AT_TIME_EVENT = 0, 
+    FIVE_MINUTES = 5,
+    TEN_MINUTES = 10,
+    FIFTEEN_MINUTES = 15,
+    THIRTY_MINUTES = 30,
+    ONE_HOUR = 60,
+    TWO_HOURS = 120,
+    ONE_DAY = 1440, // 24 hours * 60 minutes
+    TWO_DAYS = 2880, // 48 hours * 60 minutes
+    ONE_WEEK = 10080 // 7 days * 24 hours * 60 minutes
+}
+
 export type EventGroup = {
     id: number;
     title: string;
-    default_color: string;
+    color: string;
+    priority: Priority;
+    isBusy: boolean;
+    reminders: ReminderOptions[]
 };
 
 export type BaseEvent = {
@@ -20,11 +42,10 @@ export type OneTimeEvent = BaseEvent & {
 };
 
 export type RangedEvent = BaseEvent & Duration;
-
-type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type CalendarEvent = RangedEvent;
 export type EventCreation = Omit<CalendarEvent, "id" | "groups">;
-export type EventModification = Partial<Optional<Omit<CalendarEvent, "id">, "groups">>;
+export type EventModification = Partial<Omit<CalendarEvent, "id">>;
+export type GroupModification = Partial<Omit<EventGroup, "id">>;
 
 export type EventGroupResp = {
     id: number;

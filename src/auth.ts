@@ -1,7 +1,7 @@
 import ky from "ky";
 import Storage from "./storage";
 
-const API_URL = "https://smc-api.pmaw.net";
+const API_URL = import.meta.env.VITE_SMC_BASE_API || "https://smc-api.pmaw.net";
 
 export interface Auth {
     isLoggedIn(): Boolean;
