@@ -48,10 +48,15 @@ export type EventModification = Partial<Omit<CalendarEvent, "id">>;
 export type GroupModification = Partial<Omit<EventGroup, "id">>;
 
 export type EventGroupResp = {
-    id: number;
-    title: string;
-    color: string;
+  id: number;
+  title: string;
+  color: string;
+  isBusy: boolean;
+  priority: number;
+  reminders: string[]; 
+  type: string;
 }[];
+
 
 export type CalendarEventResp = {
     id: number;
@@ -67,3 +72,110 @@ export type User = {
     middleName: string;
     lastName: string;
 };
+
+export type Notification = {
+  id: number;
+  title: string;
+  message: string;
+  type: "system";
+  isRead: boolean;
+  createdAt: Date;
+};
+
+  export type Pagination = {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+  
+  export type NotificationsResponse = {
+    notifications: Notification[];
+    pagination: Pagination;
+  };
+
+export type FCMTokenPayload = {
+  token: string;
+  deviceName: string;
+};
+
+export type FCMTokenResponse = {
+  id: number;
+  deviceName: string;
+  createdAt: string;
+};
+
+export type SharedEventMember = {
+  id: number;
+  email: string;
+  status: "pending"; 
+};
+
+export type SharedEventCreation = {
+  title: string;
+  duration: number;
+  reminders: ReminderOptions[];
+  idealDays: number[];
+  idealTimeRange: {
+    startDate: string; // รูปแบบ "YYYY-MM-DD"
+    endDate: string;   // รูปแบบ "YYYY-MM-DD"
+    dailyStartMin: number;
+    dailyEndMin: number;
+  };
+  invites: string[];
+  repeat?: {
+    type: "week" |  "month";
+    count: number;
+  };
+};
+
+export type SharedEventMemberResp = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  sharedEventOwner: boolean;
+  events: CalendarEvent[]; // ปรับเปลี่ยนได้ตาม SharedCalendarEvent ที่ API กำหนด
+};
+
+
+export type SharedEventInviteResp = {
+  email: string;
+  status: string;
+  updatedAt: string;
+  createdAt: string;
+};
+
+export type SharedEventRepeat = {
+  type: "week" | "month";
+  count: number;
+};
+
+export type SharedEventResp = {
+  id: number;
+  title: string;
+  status: string;
+  duration: number;
+  reminders: ReminderOptions[];
+  idealDays: number[];
+  idealTimeRange: {
+    startDate: string; // รูปแบบ "YYYY-MM-DD"
+    endDate: string;   // รูปแบบ "YYYY-MM-DD"
+    dailyStartMin: number;
+    dailyEndMin: number;
+  };
+  members: SharedEventMemberResp[];
+  invites: SharedEventInviteResp[];
+  events: CalendarEvent[]; // หรือ SharedCalendarEvent ตามที่เหมาะสม
+  repeat?: SharedEventRepeat;
+  updatedAt: string;
+  createdAt: string;
+};
+
+export type SharedEventsResponse = {
+  sharedEvents: SharedEventResp[];
+  pagination: Pagination;
+};
+
+
+
+
